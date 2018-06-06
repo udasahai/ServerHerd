@@ -139,6 +139,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			location = clientInfo[domain]
 			location = location.split(' ')
 			location = lat_long(location[4])
+			print(location)
 
 			if domain in clientInfo:
 				msg = clientInfo[domain] + "\n"
