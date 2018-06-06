@@ -19,6 +19,8 @@ adjacencyList = {
 
 	}
 
+url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyBI3OVlE-w_AglAPw7M2hBCyPqKyAz_ibk"
+
 clientInfo = dict()
 
 def mySplitter(str):
@@ -42,6 +44,12 @@ def remain(str):
 			break
 	return (temp[::-1])
 
+async def task_func(transport):
+	async with aiohttp.ClientSession() as session:
+    	async with session.get(url) as resp:
+        	print(resp.status)
+            JSON = (await resp.json())
+            print(JSON)
 
 class EchoClientProtocol(asyncio.Protocol):
 	def __init__(self, message):
@@ -113,6 +121,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			if domain in clientInfo:
 				msg = clientInfo[domain] + "\n"
 				self.transport.write(msg.encode())
+				loop.create_task(task_func(self.transport))
 				return
 		elif data[0]=="AT":
 			print("Propogation recieved {}".format(' '.join(data)))
