@@ -123,7 +123,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			if (timestamp > 0):
 				skew = "+" + skew 
 			else:
-				skew = "-" + skew
+				skew = "" + skew
 			# print("{} {}".format(data[1],clientInfo["kiwi.cs.ucla.edu"][0]))
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
 			clientInfo[data[1]] = formatted_string
@@ -156,22 +156,21 @@ class EchoServerClientProtocol(asyncio.Protocol):
 					return
 
 			clientInfo[data[3]] = message
-			self.propagate(message)
+			loop.create_task(self.propagate(message))
 
 
 
 		self.transport.write("? \n".encode()) 
 
 
-	def propagate(self, message):
+	async def propagate(self, message):
 		for server in adjacencyList[sys.argv[1]]:
 			print("Propogation for {}".format(server))
 			try :
 				msg = message
 				msg += "\n"
 				print(msg)
-				coro = loop.create_connection(lambda: EchoClientProtocol(msg), '127.0.0.1', released[server])
-				loop.create_task(coro)	
+				await loop.create_connection(lambda: EchoClientProtocol(msg), '127.0.0.1', released[server])
 			except Exception as err: 
 				print ("cant connect to server")
 
