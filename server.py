@@ -150,7 +150,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			print("Propogation recieved {}".format(' '.join(data)))
 			if data[3] in clientInfo:
 				if clientInfo[data[3]]==message:
-					print("Terminating Propogation")
 					return
 
 			clientInfo[data[3]] = message
