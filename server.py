@@ -130,7 +130,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			print("Sending: {}".format(formatted_string))
 			msg = formatted_string + "\n"
 			self.transport.write(msg.encode())
-			loop.create_task(self.propagate(formatted_string))
+			loop.create_task(self.propagate(formatted_string))q
 			
 			return
 		elif data[0]=="WHATSAT":
@@ -140,8 +140,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			location = clientInfo[domain]
 			location = location.split(' ')
 			location = lat_long(location[4])
-			location.replace('+','')
-			print(location)
 
 			if domain in clientInfo:
 				msg = clientInfo[domain] + "\n"
