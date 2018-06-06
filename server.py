@@ -1,5 +1,5 @@
 import asyncio,sys,time
-import aiohttp,re 
+import aiohttp,re,json
 
 released = {
 		"Goloman" : 12445,
@@ -46,10 +46,10 @@ def remain(str):
 
 async def task_func(transport):
 	async with aiohttp.ClientSession() as session:
-    	async with session.get(url) as resp:
-        	print(resp.status)
-            JSON = (await resp.json())
-            print(JSON)
+		async with session.get(url) as resp:
+			print(resp.status)
+			JSON = (await resp.json())
+			print(json.dumps(JSON))
 
 class EchoClientProtocol(asyncio.Protocol):
 	def __init__(self, message):
