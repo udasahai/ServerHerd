@@ -50,7 +50,10 @@ async def task_func(transport):
 			print(resp.status)
 			JSON = (await resp.json())
 			JSON['results'] = JSON['results'][:5]
-			print(json.dumps(JSON, indent=4, sort_keys=True))
+			JSON = (json.dumps(JSON, indent=4, sort_keys=True))
+			JSON.replace('\n\n','\n')
+			JSON.rstrip('\n')
+			transport.write(JSON.encode())
 
 class EchoClientProtocol(asyncio.Protocol):
 	def __init__(self, message):
