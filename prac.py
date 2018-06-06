@@ -37,6 +37,20 @@ def remain(str):
 			break
 	return (temp[::-1])
 
+def lat_long(str):
+	cords = []
+	temp = ""
+	for i in range(0,len(str)): 
+		if str[i]=='+' or str[i]=='-':
+			if i!=0:
+				cords.append(temp)
+				temp = ""
+		temp += str[i]
+	cords.append(temp)
+	return ",".join(cords)
+
+
+
 
 string = "Hello\n"
 

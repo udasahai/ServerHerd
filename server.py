@@ -18,8 +18,8 @@ adjacencyList = {
 		"Welsh": ["Holiday"]
 
 	}
-
-url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyBI3OVlE-w_AglAPw7M2hBCyPqKyAz_ibk"
+api_key = "AIzaSyBI3OVlE-w_AglAPw7M2hBCyPqKyAz_ibk"
+url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
 clientInfo = dict()
 
@@ -44,15 +44,30 @@ def remain(str):
 			break
 	return (temp[::-1])
 
-async def task_func(transport):
+def lat_long(str):
+	cords = []
+	temp = ""
+	for i in range(0,len(str)): 
+		if str[i]=='+' or str[i]=='-':
+			if i!=0:
+				cords.append(temp)
+				temp = ""
+		temp += str[i]
+	cords.append(temp)
+	return ",".join(cords)
+
+
+async def task_func(transport, num_entries, radius, location):
 	async with aiohttp.ClientSession() as session:
-		async with session.get(url) as resp:
-			print(resp.status)
+		params = {'key': api_key, 'location': location, 'radius': radius}
+		async with session.get(url,params=params) as resp:
+			print(resp.url)
 			JSON = (await resp.json())
-			JSON['results'] = JSON['results'][:5]
+			JSON['results'] = JSON['results'][:num_entries]
 			JSON = (json.dumps(JSON, indent=4, sort_keys=True))
 			JSON.replace('\n\n','\n')
 			JSON.rstrip('\n')
+			JSON += "\n\n"
 			transport.write(JSON.encode())
 
 class EchoClientProtocol(asyncio.Protocol):
@@ -119,13 +134,16 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			return
 		elif data[0]=="WHATSAT":
 			domain = data[1]
-			radius = int(data[2])
+			radius = int(data[2])*1000
 			num_entries = int(data[3])
+			location = clientInfo[domain][4]
+			location = lat_long(location)
+
 
 			if domain in clientInfo:
 				msg = clientInfo[domain] + "\n"
 				self.transport.write(msg.encode())
-				loop.create_task(task_func(self.transport))
+				loop.create_task(task_func(self.transport, num_entries, radius, location))
 				return
 		elif data[0]=="AT":
 			print("Propogation recieved {}".format(' '.join(data)))
