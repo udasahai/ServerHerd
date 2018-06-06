@@ -59,7 +59,7 @@ def lat_long(str):
 
 async def task_func(transport, num_entries, radius, location):
 	async with aiohttp.ClientSession() as session:
-		Url = '{}?location={}&radius={}&key={}'.format(url,location,radius,key)
+		Url = '{}?location={}&radius={}&key={}'.format(url,location,radius,api_key)
 		print(Url)
 		async with session.get(Url) as resp:
 			print(resp.url)
