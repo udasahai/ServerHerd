@@ -59,10 +59,11 @@ def lat_long(str):
 
 async def task_func(transport, num_entries, radius, location):
 	async with aiohttp.ClientSession() as session:
-		params = {'key': api_key, 'location': location, 'radius': radius}
+		params = {'key': api_key, 'location': "+34.068930,-118.445127", 'radius': radius}
 		async with session.get(url,params=params) as resp:
 			print(resp.url)
 			JSON = (await resp.json())
+			print("num_entries {}".format(num_entries))
 			JSON['results'] = JSON['results'][:num_entries]
 			JSON = (json.dumps(JSON, indent=4, sort_keys=True))
 			JSON.replace('\n\n','\n')
