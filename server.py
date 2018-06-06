@@ -2,11 +2,11 @@ import asyncio,sys,time
 import aiohttp,re 
 
 released = {
-		"Goloman" : 8888,
-		"Hands" : 8889,
-		"Holiday" : 8890,
-		"Welsh" : 8891,
-		"Wilkes" : 8892
+		"Goloman" : 12445,
+		"Hands" : 12446,
+		"Holiday" : 12447,
+		"Welsh" : 12448,
+		"Wilkes" : 12449
 	}
 
 
