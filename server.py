@@ -137,8 +137,9 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			radius = int(data[2])*1000
 			num_entries = int(data[3])
 			location = clientInfo[domain][4]
+			print(location)
 			location = lat_long(location)
-
+			print(location)
 
 			if domain in clientInfo:
 				msg = clientInfo[domain] + "\n"
