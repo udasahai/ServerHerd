@@ -49,8 +49,7 @@ async def task_func(transport):
 		async with session.get(url) as resp:
 			print(resp.status)
 			JSON = (await resp.json())
-			parsed = json.loads(JSON)
-			print(json.dumps(parsed, indent=4, sort_keys=True))
+			print(json.dumps(JSON, indent=4, sort_keys=True))
 
 class EchoClientProtocol(asyncio.Protocol):
 	def __init__(self, message):
