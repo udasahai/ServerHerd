@@ -171,7 +171,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			return
 
 
-		self.transport.write("? \n".encode()) 
+		self.transport.write("? {}".format(message).encode()) 
 
 
 	async def propagate(self, message):
