@@ -71,6 +71,7 @@ async def task_func(transport, num_entries, radius, location):
 			JSON.rstrip('\n')
 			JSON += "\n\n"
 			transport.write(JSON.encode())
+			file.write("Sending JSON to Client \n {}".format(JSON))
 
 class EchoClientProtocol(asyncio.Protocol):
 	def __init__(self, message):
@@ -80,6 +81,7 @@ class EchoClientProtocol(asyncio.Protocol):
 		self.transport = transport
 		transport.write(self.message.encode())
 		print('Data sent: {!r}'.format(self.message))
+
 		# self.transport.close()
 
 	def connection_lost(self, exc):
@@ -161,6 +163,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				if domain in clientInfo:
 					msg = clientInfo[domain] + "\n"
 					self.transport.write(msg.encode())
+					file.write("Sending to {}: {}".format(domain,msg))
 					loop.create_task(task_func(self.transport, num_entries, radius, location))
 					return
 		elif data[0]=="AT":
@@ -178,7 +181,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 
 		self.transport.write("? {}\n".format(message).encode()) 
-
+		file.write("Sending to client: ? {}\n".format(message))
 
 	async def propagate(self, message):
 		for server in adjacencyList[sys.argv[1]]:
@@ -187,6 +190,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				msg = message
 				msg += "\n"
 				print(msg)
+				file.write("Sending to Server {}: {}".format(server,msg))
 				await loop.create_connection(lambda: EchoClientProtocol(msg), '127.0.0.1', released[server])
 			except Exception as err: 
 				print ("cant connect to server")
