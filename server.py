@@ -127,6 +127,10 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			# print("{} {}".format(data[1],clientInfo["kiwi.cs.ucla.edu"][0]))
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
 
+			print("Sending: {}".format(formatted_string))
+			msg = formatted_string + "\n"
+			self.transport.write(msg.encode())
+
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
 				if float(data[3]) <= float(time_string[5]):
@@ -136,9 +140,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			print("Verified new message")
 
 			clientInfo[data[1]] = formatted_string
-			print("Sending: {}".format(formatted_string))
-			msg = formatted_string + "\n"
-			self.transport.write(msg.encode())
 			loop.create_task(self.propagate(formatted_string))
 			
 			return
