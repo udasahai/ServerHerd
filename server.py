@@ -110,8 +110,8 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		message = data.decode()
 		print("recieved {}".format(message))
 		file.write('Recieved: {}'.format(message))
+		message = message.replace('\t', ' ')
 		message = message.replace('\r\n', '\n')
-		message = message.replace('\t', '\n')
 		self.buffer += message
 		splits = mySplitter(self.buffer)
 		if (splits==[]):
