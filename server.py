@@ -81,20 +81,22 @@ class EchoClientProtocol(asyncio.Protocol):
 	def connection_made(self, transport):
 		self.transport = transport
 		transport.write(self.message.encode())
-		file.write("Sending to Server {}: {}".format(self.server,self.message))
+		file.write("New connection to Server {} \n".format(self.server))
+		file.write("Sending to Server {}: {} \n".format(self.server,self.message))
 		print('Data sent: {!r}'.format(self.message))
 
 		# self.transport.close()
 
 	def connection_lost(self, exc):
-		print('Closed concoction')
+		print('Closed connection to {}'.format(self.server))
+		file.write('Closed connection to {} \n'.format(self.server))
 		self.transport.close()
 
 
 class EchoServerClientProtocol(asyncio.Protocol):
 	def connection_made(self, transport):
 		peername = transport.get_extra_info('peername')
-		file.write('Connection from {}\n'.format(peername))
+		file.write('New Connection from {}\n'.format(peername))
 		print('Connection from {}'.format(peername))
 		self.transport = transport
 		self.buffer = ""
@@ -164,7 +166,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				if domain in clientInfo:
 					msg = clientInfo[domain] + "\n"
 					self.transport.write(msg.encode())
-					file.write("Sending locatio for {}: {}".format(domain,msg))
+					file.write("Sending location for {}: {}".format(domain,msg))
 					loop.create_task(task_func(self.transport, num_entries, radius, location))
 					return
 		elif data[0]=="AT":
