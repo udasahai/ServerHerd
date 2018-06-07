@@ -129,8 +129,11 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
-				if data[3] <= time_string[5]:
+				if int(data[3]) <= int(time_string[5]):
+					print("Older message")
 					return
+
+			print("Verified new message")
 
 			clientInfo[data[1]] = formatted_string
 			print("Sending: {}".format(formatted_string))
