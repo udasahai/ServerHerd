@@ -144,18 +144,19 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			
 			return
 		elif data[0]=="WHATSAT":
-			domain = data[1]
-			radius = int(data[2])*1000
-			num_entries = int(data[3])
-			location = clientInfo[domain]
-			location = location.split(' ')
-			location = lat_long(location[4])
+			if data[1] in clientInfo:
+				domain = data[1]
+				radius = int(data[2])*1000
+				num_entries = int(data[3])
+				location = clientInfo[domain]
+				location = location.split(' ')
+				location = lat_long(location[4])
 
-			if domain in clientInfo:
-				msg = clientInfo[domain] + "\n"
-				self.transport.write(msg.encode())
-				loop.create_task(task_func(self.transport, num_entries, radius, location))
-				return
+				if domain in clientInfo:
+					msg = clientInfo[domain] + "\n"
+					self.transport.write(msg.encode())
+					loop.create_task(task_func(self.transport, num_entries, radius, location))
+					return
 		elif data[0]=="AT":
 			print("Propogation recieved {}".format(' '.join(data)))
 
@@ -167,7 +168,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 			clientInfo[data[3]] = message
 			loop.create_task(self.propagate(message))
-
+			return
 
 
 		self.transport.write("? \n".encode()) 
