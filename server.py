@@ -129,7 +129,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
-				if int(data[3]) <= int(time_string[5]):
+				if float(data[3]) <= float(time_string[5]):
 					print("Older message")
 					return
 
