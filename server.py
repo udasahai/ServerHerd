@@ -126,6 +126,12 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				skew = "" + skew
 			# print("{} {}".format(data[1],clientInfo["kiwi.cs.ucla.edu"][0]))
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
+
+			if data[1] in clientInfo: 
+				time_string = clientInfo[data[1]].split(' ')
+				if data[3] <= time_string[5]:
+					return
+
 			clientInfo[data[1]] = formatted_string
 			print("Sending: {}".format(formatted_string))
 			msg = formatted_string + "\n"
