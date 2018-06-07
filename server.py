@@ -66,7 +66,7 @@ async def task_func(transport, num_entries, radius, location):
 			print(resp.url)
 			JSON = (await resp.json())
 			JSON['results'] = JSON['results'][:num_entries]
-			JSON = (json.dumps(JSON, indent=4, sort_keys=True))
+			JSON = (json.dumps(JSON, indent=4))
 			JSON.replace('\n\n','\n')
 			JSON.rstrip('\n')
 			JSON += "\n\n"
@@ -82,7 +82,7 @@ class EchoClientProtocol(asyncio.Protocol):
 		self.transport = transport
 		transport.write(self.message.encode())
 		file.write("New connection to Server {} \n".format(self.server))
-		file.write("Sending to Server {}: {} \n".format(self.server,self.message))
+		file.write("Sending to Server {}: {}".format(self.server,self.message))
 		print('Data sent: {!r}'.format(self.message))
 
 		# self.transport.close()
@@ -105,7 +105,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 	def data_received(self, data):
 		message = data.decode()
 		print("recieved {}".format(message))
-		file.write('Data recieved: {}'.format(message))
+		file.write('Recieved: {}'.format(message))
 		message = message.replace('\r\n', '\n')
 		self.buffer += message
 		splits = mySplitter(self.buffer)
@@ -225,4 +225,5 @@ if __name__ == "__main__":
 	loop.run_until_complete(server.wait_closed())
 	loop.close()
 	file.write("Closed event loop\n")
+	file.close()
 
