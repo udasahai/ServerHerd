@@ -158,8 +158,11 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				return
 		elif data[0]=="AT":
 			print("Propogation recieved {}".format(' '.join(data)))
+
 			if data[3] in clientInfo:
-				if clientInfo[data[3]]==message:
+				stored = clientInfo(data[3]).split(' ')
+				if clientInfo[data[3]]==message or float(data[5])<=float(stored[5]):
+					print ("Recieved stale message, returning")
 					return
 
 			clientInfo[data[3]] = message
