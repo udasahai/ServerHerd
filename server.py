@@ -21,6 +21,8 @@ adjacencyList = {
 api_key = "AIzaSyBI3OVlE-w_AglAPw7M2hBCyPqKyAz_ibk"
 url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
+file = open("{}.txt".format(sys.argv[1]),"w+")
+
 clientInfo = dict()
 
 def mySplitter(str):
