@@ -148,7 +148,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
-				if float(data[3]) <= float(time_string[5]):
+				if float(data[3]) < float(time_string[5]):
 					print("Older message")
 					return
 
@@ -178,7 +178,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 			if data[3] in clientInfo:
 				stored = clientInfo[data[3]].split(' ')
-				if clientInfo[data[3]]==message or float(data[5])<=float(stored[5]):
+				if clientInfo[data[3]]==message or float(data[5])<float(stored[5]):
 					print ("Recieved stale message, returning")
 					return
 
