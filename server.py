@@ -115,7 +115,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		print("In processData {}".format(data))
 		# print(message[3])
 	 
-		if data[0]=="IAMAT":
+		if data[0]=="IAMAT" and len(data)==4:
 			timestamp = data[3]
 			timestamp = time.time() - float(timestamp)
 			skew = str(timestamp)
@@ -143,7 +143,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			loop.create_task(self.propagate(formatted_string))
 			
 			return
-		elif data[0]=="WHATSAT":
+		elif data[0]=="WHATSAT" and len(data)==4:
 			if data[1] in clientInfo:
 				domain = data[1]
 				radius = int(data[2])*1000
