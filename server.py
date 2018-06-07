@@ -101,6 +101,10 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		self.transport = transport
 		self.buffer = ""
 
+	def connection_lost(self, exc):
+		file.write('Closed connection to {} \n'.format(self.transport.get_extra_info('peername')))
+
+
 
 	def data_received(self, data):
 		message = data.decode()
