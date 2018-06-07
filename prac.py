@@ -14,6 +14,7 @@
 # loop = asyncio.get_event_loop()
 # loop.run_until_complete(main())
 
+import logging
 
 
 def mySplitter(str):
@@ -49,11 +50,16 @@ def lat_long(str):
 	cords.append(temp)
 	return ",".join(cords)
 
+def complex_algorithm(items):
+    for i in range(1,10):
+        # do some complex algorithm computation
+        file.write("{}\n".format(i))
 
 
 
-string = "Hello\n"
+file = open("hello.log", 'a+')
+file.write("Hello World")
 
-print(mySplitter(string))
-print(mySplitter("Hello World"))
-print()
+complex_algorithm(2)
+
+

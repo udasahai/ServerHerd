@@ -21,7 +21,6 @@ adjacencyList = {
 api_key = "AIzaSyBI3OVlE-w_AglAPw7M2hBCyPqKyAz_ibk"
 url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
-file = open("{}.txt".format(sys.argv[1]),"a+")
 
 clientInfo = dict()
 
@@ -91,6 +90,7 @@ class EchoClientProtocol(asyncio.Protocol):
 class EchoServerClientProtocol(asyncio.Protocol):
 	def connection_made(self, transport):
 		peername = transport.get_extra_info('peername')
+		file.write('Connection from {}\n'.format(peername))
 		print('Connection from {}'.format(peername))
 		self.transport = transport
 		self.buffer = ""
@@ -99,6 +99,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 	def data_received(self, data):
 		message = data.decode()
 		print("recieved {}".format(message))
+		file.write('data recieved{}\n'.format(peername))
 		message = message.replace('\r\n', '\n')
 		self.buffer += message
 		splits = mySplitter(self.buffer)
@@ -115,6 +116,8 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		# data = message.split(' ')
 		data = re.findall(r'[^ ]+', message)
 		print("In processData {}".format(data))
+		file.write("In processData {}\n".format(data))
+
 		# print(message[3])
 	 
 		if data[0]=="IAMAT" and len(data)==4:
@@ -130,6 +133,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
 
 			print("Sending: {}".format(formatted_string))
+			file.write("Sending: {}\n".format(formatted_string))	
 			msg = formatted_string + "\n"
 			self.transport.write(msg.encode())
 
@@ -186,13 +190,17 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				await loop.create_connection(lambda: EchoClientProtocol(msg), '127.0.0.1', released[server])
 			except Exception as err: 
 				print ("cant connect to server")
+				file.write("cant connect to server\n")
+
 
 
 
 
 if __name__ == "__main__":
 
+	file = open("{}.txt".format(sys.argv[1]),"a+")
 	loop = asyncio.get_event_loop()
+	file.write("Starting event loop\n")
 	# Each client connection will create a new protocol instance
 	coro = loop.create_server(EchoServerClientProtocol, '127.0.0.1', released[sys.argv[1]])
 	server = loop.run_until_complete(coro)
@@ -210,5 +218,5 @@ if __name__ == "__main__":
 	server.close()
 	loop.run_until_complete(server.wait_closed())
 	loop.close()
-
+	file.write("Closed event loop\n")
 
