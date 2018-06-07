@@ -74,12 +74,14 @@ async def task_func(transport, num_entries, radius, location):
 			file.write("Sending JSON to Client \n {}".format(JSON))
 
 class EchoClientProtocol(asyncio.Protocol):
-	def __init__(self, message):
+	def __init__(self, message, server):
 		self.message = message
+		self.server = server
 
 	def connection_made(self, transport):
 		self.transport = transport
 		transport.write(self.message.encode())
+		file.write("Sending to Server {}: {}".format(self.server,self.message))
 		print('Data sent: {!r}'.format(self.message))
 
 		# self.transport.close()
@@ -101,7 +103,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 	def data_received(self, data):
 		message = data.decode()
 		print("recieved {}".format(message))
-		file.write('data recieved{}\n'.format(message))
+		file.write('Data recieved: {}'.format(message))
 		message = message.replace('\r\n', '\n')
 		self.buffer += message
 		splits = mySplitter(self.buffer)
@@ -118,7 +120,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		# data = message.split(' ')
 		data = re.findall(r'[^ ]+', message)
 		print("In processData {}".format(data))
-		file.write("In processData {}\n".format(data))
 
 		# print(message[3])
 	 
@@ -135,9 +136,9 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
 
 			print("Sending: {}".format(formatted_string))
-			file.write("Sending: {}\n".format(formatted_string))	
 			msg = formatted_string + "\n"
 			self.transport.write(msg.encode())
+			file.write("Sending to Client: {}".format(msg))
 
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
@@ -163,7 +164,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				if domain in clientInfo:
 					msg = clientInfo[domain] + "\n"
 					self.transport.write(msg.encode())
-					file.write("Sending to {}: {}".format(domain,msg))
+					file.write("Sending locatio for {}: {}".format(domain,msg))
 					loop.create_task(task_func(self.transport, num_entries, radius, location))
 					return
 		elif data[0]=="AT":
@@ -190,11 +191,10 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				msg = message
 				msg += "\n"
 				print(msg)
-				file.write("Sending to Server {}: {}".format(server,msg))
-				await loop.create_connection(lambda: EchoClientProtocol(msg), '127.0.0.1', released[server])
+				await loop.create_connection(lambda: EchoClientProtocol(msg,server), '127.0.0.1', released[server])
 			except Exception as err: 
 				print ("cant connect to server")
-				file.write("cant connect to server\n")
+				file.write("Failed to connect to {} \n".format(server))
 
 
 
