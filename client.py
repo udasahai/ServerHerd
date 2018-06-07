@@ -20,7 +20,7 @@ class EchoClientProtocol(asyncio.Protocol):
 loop = asyncio.get_event_loop()
 message = 'IAMAT kiwi.cs.ucla.edu +34.068930-118.445127 1520023934.918963997\n      IAMAT orange.cs.ucla.edu +34.068930-118.445127 1520023934.918963997\n IAMAT gaajar.cs.ucla.edu +34.068930-118.445127 1520023934.918963997\n'
 coro = loop.create_connection(lambda: EchoClientProtocol(message, loop),
-                              '127.0.0.1', 12445)
+                              '127.0.0.1', 12451)
 loop.run_until_complete(coro)
 loop.run_forever()
 loop.close()
