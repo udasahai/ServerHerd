@@ -61,9 +61,7 @@ def lat_long(str):
 async def task_func(transport, num_entries, radius, location):
 	async with aiohttp.ClientSession() as session:
 		Url = '{}?location={}&radius={}&key={}'.format(url,location,radius,api_key)
-		print(Url)
 		async with session.get(Url) as resp:
-			print(resp.url)
 			JSON = (await resp.json())
 			JSON['results'] = JSON['results'][:num_entries]
 			JSON = (json.dumps(JSON, indent=4))
@@ -83,12 +81,10 @@ class EchoClientProtocol(asyncio.Protocol):
 		transport.write(self.message.encode())
 		file.write("New connection to Server {} \n".format(self.server))
 		file.write("Sending to Server {}: {}".format(self.server,self.message))
-		print('Data sent: {!r}'.format(self.message))
 
 		# self.transport.close()
 
 	def connection_lost(self, exc):
-		print('Closed connection to {}'.format(self.server))
 		file.write('Closed connection to {} \n'.format(self.server))
 		self.transport.close()
 
@@ -97,7 +93,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 	def connection_made(self, transport):
 		peername = transport.get_extra_info('peername')
 		file.write('New Connection from {}\n'.format(peername))
-		print('Connection from {}'.format(peername))
 		self.transport = transport
 		self.buffer = ""
 
@@ -108,7 +103,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 	def data_received(self, data):
 		message = data.decode()
-		print("recieved {}".format(message))
 		file.write('Recieved: {}'.format(message))
 		message = message.replace('\t', ' ')
 		message = message.replace('\r\n', '\n')
@@ -119,16 +113,12 @@ class EchoServerClientProtocol(asyncio.Protocol):
 		else: 
 			for msg in splits:
 				self.processData(msg)
-				# print(msg.split(' '))
 			self.buffer = remain(self.buffer)
 
 
 	def processData(self, message):
 		# data = message.split(' ')
 		data = re.findall(r'[^ ]+', message)
-		print("In processData {}".format(data))
-
-		# print(message[3])
 	 
 		if data[0]=="IAMAT" and len(data)==4:
 			timestamp = data[3]
@@ -139,10 +129,8 @@ class EchoServerClientProtocol(asyncio.Protocol):
 				skew = "+" + skew 
 			else:
 				skew = "" + skew
-			# print("{} {}".format(data[1],clientInfo["kiwi.cs.ucla.edu"][0]))
 			formatted_string = "{} {} {} {} {} {}".format("AT",sys.argv[1], skew, data[1], data[2], data[3])
 
-			print("Sending: {}".format(formatted_string))
 			msg = formatted_string + "\n"
 			self.transport.write(msg.encode())
 			file.write("Sending to Client: {}".format(msg))
@@ -150,10 +138,8 @@ class EchoServerClientProtocol(asyncio.Protocol):
 			if data[1] in clientInfo: 
 				time_string = clientInfo[data[1]].split(' ')
 				if float(data[3]) < float(time_string[5]):
-					print("Older message")
 					return
 
-			print("Verified new message")
 
 			clientInfo[data[1]] = formatted_string
 			loop.create_task(self.propagate(formatted_string))
@@ -175,12 +161,10 @@ class EchoServerClientProtocol(asyncio.Protocol):
 					loop.create_task(task_func(self.transport, num_entries, radius, location))
 					return
 		elif data[0]=="AT":
-			print("Propogation recieved {}".format(' '.join(data)))
 
 			if data[3] in clientInfo:
 				stored = clientInfo[data[3]].split(' ')
 				if clientInfo[data[3]]==message or float(data[5])<float(stored[5]):
-					print ("Recieved stale message, returning")
 					return
 
 			clientInfo[data[3]] = message
@@ -193,14 +177,11 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
 	async def propagate(self, message):
 		for server in adjacencyList[sys.argv[1]]:
-			print("Propogation for {}".format(server))
 			try :
 				msg = message
 				msg += "\n"
-				print(msg)
 				await loop.create_connection(lambda: EchoClientProtocol(msg,server), '127.0.0.1', released[server])
 			except Exception as err: 
-				print ("cant connect to server")
 				file.write("Failed to connect to {} \n".format(server))
 
 
@@ -224,8 +205,6 @@ if __name__ == "__main__":
 		pass
 
 	# Close the server
-	for x in clientInfo:
-		print(clientInfo[x]) 
 	server.close()
 	loop.run_until_complete(server.wait_closed())
 	loop.close()
